@@ -1,7 +1,32 @@
 #ventana main
 import tkinter as tk
+
+def cargar_personajes():
+    personajes=[]
+    
+    with open("personajes.txt", "r") as archivo:
+        for linea in archivo:
+            datos=linea.strip().split(",")
+            
+            nombre=datos[0]
+            hp= int(datos[1])
+            atk=int(datos[2])
+            defensa=int(datos[3])
+            
+            personaje={
+                "nombre":nombre,
+                "hp": hp,
+                "atk": atk,
+                "def": defensa
+            }
+            personajes.append(personaje)
+            
+    return personajes
+
 def crear_pantalla_inicio(ventana):
     
+    personajes=cargar_personajes()
+    print(personajes)
     ventana.config(bg="lightblue")
 
     def abrir_ventana_about():
@@ -45,7 +70,7 @@ def crear_pantalla_inicio(ventana):
             mensaje_label.config(text="Debe ingresar un nombre")
         else:
             mensaje_label.config(text="")
-            print("Jugador:", nombre)    
+            mostrar_siguiente(nombre)    
         
         
     boton_iniciar=tk.Button(ventana, text="INICIAR", command= iniciar_juego)
@@ -55,3 +80,18 @@ def crear_pantalla_inicio(ventana):
     mensaje_label=tk.Label(ventana, text="", fg="red", bg="lightblue")
     mensaje_label.place(x=500, y=350)
     
+    #crear lo relacionado a cambios de ventana
+    
+    #para limpiar la pantalla
+    def limpiar_pantalla():
+        for widget in ventana.winfo_children():
+            widget.destroy()
+        
+    #para hacer la otra ventana        
+    def mostrar_siguiente(nombre):
+        limpiar_pantalla()
+        label=tk.Label(ventana, text=f"Bienvenido {nombre}",font=("Arial",20))
+        label.pack(pady=100)
+     
+        
+        

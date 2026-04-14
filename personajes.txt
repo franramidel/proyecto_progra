@@ -1,0 +1,15 @@
+Jose_David,160,10,24
+Hansi_pig,170,8,25
+Spiderman,100,26,12
+Anthony_Porras,110,18,14
+Bad_Bunny,105,20,13
+Freddy,130,16,18
+Spike,95,24,10
+Walter_White,115,22,12
+Goku_chema_sele,120,28,15
+Ronald_Matarrita,140,14,20
+Spongebob,125,17,17
+Figueres,135,15,19
+Jeriner,100,28,13
+Chakil,97,21,13
+Gengar,111,22,11
