@@ -90,6 +90,8 @@ class Entrenador:
 
     def personaje_activo(self) -> Personaje:
         """Devuelve el personaje que está peleando ahora."""
+        if self.activo>=len(self.personajes):
+            self.activo=max(0,len(self.personajes)-1)
         return self.personajes[self.activo]
 
     def tiene_personajes_vivos(self) -> bool:

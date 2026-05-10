@@ -141,7 +141,15 @@ def _crear_panel_entrenador(parent, entrenador: Entrenador, lado: str) -> dict:
  
  
 def _turno_jugador_ataca(jugador: Entrenador, hollow: Entrenador) -> dict:
-    """Procesa el ataque del jugador contra el hollow."""
+    """
+    Procesa el ataque del jugador contra el hollow.
+ 
+    CORRECCIÓN: se eliminó la captura inline que hacía aquí.
+    La captura se delega completamente a _procesar_captura()
+    en logica_batalla.py para evitar la doble captura que
+    ocurría cuando ko=True: antes se capturaba aquí Y luego
+    _procesar_captura volvía a capturar otro personaje del hollow.
+    """
     act = jugador.personaje_activo()
     dfd = hollow.personaje_activo()
     danio = act.calcular_danio(dfd)
@@ -150,10 +158,6 @@ def _turno_jugador_ataca(jugador: Entrenador, hollow: Entrenador) -> dict:
     msg = f"{act.nombre} atacó a {dfd.nombre} causando {danio} de daño."
     if ko:
         msg += f" ¡{dfd.nombre} fue derrotado!"
-        capturado = dfd
-        hollow.personajes.remove(capturado)
-        jugador.capturar(capturado)
-        hollow.activo = min(hollow.activo, len(hollow.personajes) - 1)
     return {"ko": ko, "mensaje": msg, "accion": "atacar"}
  
  
@@ -220,6 +224,12 @@ def _mostrar_resultado_y_volver(
     """
     Muestra el resultado de la batalla y vuelve al mapa.
     Si se completaron todas las tierras muestra pantalla de victoria.
+ 
+    CORRECCIÓN: se cambió askokcancel por showinfo y la navegación
+    de vuelta al mapa es siempre incondicional.  Antes, si el jugador
+    perdía y presionaba "Cancel" en askokcancel, la condición
+    (resultado_ok or jugador_gano) era False y la pantalla quedaba
+    congelada sin forma de volver al mapa.
     """
     if all(completadas):
         for w in ventana.winfo_children():
@@ -240,19 +250,16 @@ def _mostrar_resultado_y_volver(
         ).pack()
         return
  
-    resultado_ok = messagebox.askokcancel(
-        "Resultado de batalla",
-        mensaje + "\n\n¿Volver al mapa?"
-    )
+    # Mostrar resultado y siempre volver al mapa al cerrar el diálogo
+    messagebox.showinfo("Resultado de batalla", mensaje)
  
-    if resultado_ok or jugador_gano:
-        for w in ventana.winfo_children():
-            w.destroy()
-        from ventanas.pantalla_mapa import crear_pantalla_mapa
-        crear_pantalla_mapa(
-            ventana, jugador, avatar, todos_personajes,
-            completadas, idx_tierra
-        )
+    for w in ventana.winfo_children():
+        w.destroy()
+    from ventanas.pantalla_mapa import crear_pantalla_mapa
+    crear_pantalla_mapa(
+        ventana, jugador, avatar, todos_personajes,
+        completadas, idx_tierra
+    )
  
  
 # ── Pantalla principal de batalla ──────────────────────────
@@ -333,6 +340,9 @@ def crear_pantalla_batalla(
  
     def redibujar_panel(panel_widgets: dict, entrenador: Entrenador):
         """Actualiza imagen, HP y equipo del panel de un entrenador."""
+        # sino quedan personajes no hay nada q mostrar
+        if not entrenador.personajes:
+            return
         p = entrenador.personaje_activo()
  
         # actualizar imagen al cambiar de personaje
@@ -475,4 +485,3 @@ def crear_pantalla_batalla(
         callback_actualizar_ui=callback_actualizar_ui,
         callback_fin=callback_fin,
     )
- 

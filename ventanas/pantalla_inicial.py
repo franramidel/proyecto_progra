@@ -15,8 +15,7 @@ color_error="#e05c5c"
 #helpers de ui
 def _label(parent, texto: str) -> tk.Label:
     #Crea un Label con estilo estándar del juego.
-    
-        return tk.Label(
+    return tk.Label(
             parent, text=texto,
             font=("Georgia", 11, "bold"),
             fg=color_acento, bg=color_fondo,
@@ -139,8 +138,7 @@ def _ir_a_mapa(ventana, jugador, avatar, todos_personajes):
     #limpia los widgets y carga la pantalla del mapa
     for widget in ventana.winfo_children():
         widget.destroy()
-
-# importación aquí adentro para evitar importaciones circulares
+        # importación aquí adentro para evitar importaciones circulares
     from ventanas.pantalla_mapa import crear_pantalla_mapa
     crear_pantalla_mapa(ventana, jugador, avatar, todos_personajes)
 
@@ -157,7 +155,7 @@ def crear_pantalla_inicio(ventana:tk.Tk):
     frame_titulo=tk.Frame(ventana,bg=color_fondo)
     frame_titulo.pack(pady=(30,10))
     
-    tk.Label(frame_titulo,text="tituloo",font=("Georgia",26,"bold"),fg=color_acento,bg=color_fondo).pack()
+    tk.Label(frame_titulo,text="Imaginary Battles",font=("Georgia",26,"bold"),fg=color_acento,bg=color_fondo).pack()
     tk.Label(frame_titulo,text="guardian de las historias",font=("Georgia",13,"italic"),fg=color_texto,bg=color_fondo).pack(pady=(2,0))    
 
     #separador decorativo
@@ -256,13 +254,13 @@ def crear_pantalla_inicio(ventana:tk.Tk):
         if not nombre:
             mensaje_label.config(text="⚠  Debes ingresar un nombre.")
             return
- 
+
         # Filtramos los personajes cuya IntVar vale 1
         seleccionados = [
             p for p in todos_personajes
             if checks_vars[p.nombre].get() == 1
         ]
- 
+
         if len(seleccionados) != 3:
             mensaje_label.config(
                 text=f"⚠  Selecciona exactamente 3 personajes "
@@ -270,11 +268,10 @@ def crear_pantalla_inicio(ventana:tk.Tk):
             )
             return
 
-
-     # Todo válido: creamos el entrenador del jugador
+        # Todo válido: creamos el entrenador del jugador
         jugador = Entrenador(nombre, seleccionados)
         avatar  = avatar_var.get()
- 
+
         mensaje_label.config(text="")
         _ir_a_mapa(ventana, jugador, avatar, todos_personajes)
  
