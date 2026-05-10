@@ -163,25 +163,28 @@ def _turno_jugador_ataca(jugador: Entrenador, hollow: Entrenador) -> dict:
  
 def _ventana_cambio(ventana_padre, jugador: Entrenador, al_cambiar):
     """
-    Abre una pequeña ventana para elegir el personaje de reemplazo.
-    Solo muestra los personajes vivos que no sean el activo.
+    Abre una ventana con barra de scroll para elegir el personaje de
+    reemplazo. Muestra solo los personajes vivos que no sean el activo.
     """
+    disponibles = [
+        (i, p) for i, p in enumerate(jugador.personajes)
+        if i != jugador.activo and not p.esta_ko()
+    ]
+ 
+    # Altura dinámica: 80px por botón, máximo 400px
+    alto_ventana = min(120 + len(disponibles) * 80, 400)
+ 
     win = tk.Toplevel(ventana_padre)
     win.title("Cambiar personaje")
-    win.geometry("280x260")
+    win.geometry(f"300x{alto_ventana}")
     win.config(bg=COLOR_FONDO)
-    win.resizable(False, False)
+    win.resizable(False, True)
  
     tk.Label(
         win, text="Elige un personaje:",
         font=("Georgia", 12, "bold"),
         fg=COLOR_ACENTO, bg=COLOR_FONDO,
-    ).pack(pady=12)
- 
-    disponibles = [
-        (i, p) for i, p in enumerate(jugador.personajes)
-        if i != jugador.activo and not p.esta_ko()
-    ]
+    ).pack(pady=10)
  
     if not disponibles:
         tk.Label(
@@ -192,6 +195,37 @@ def _ventana_cambio(ventana_padre, jugador: Entrenador, al_cambiar):
                   bg=COLOR_BOTON, fg=COLOR_TEXTO, relief="flat").pack()
         return
  
+    # Área scrolleable: Canvas + Scrollbar
+    frame_scroll = tk.Frame(win, bg=COLOR_FONDO)
+    frame_scroll.pack(fill="both", expand=True, padx=10, pady=(0, 10))
+ 
+    scrollbar = tk.Scrollbar(frame_scroll, orient="vertical")
+    scrollbar.pack(side="right", fill="y")
+ 
+    canvas = tk.Canvas(
+        frame_scroll,
+        bg=COLOR_FONDO,
+        highlightthickness=0,
+        yscrollcommand=scrollbar.set,
+    )
+    canvas.pack(side="left", fill="both", expand=True)
+    scrollbar.config(command=canvas.yview)
+ 
+    frame_botones = tk.Frame(canvas, bg=COLOR_FONDO)
+    canvas_window = canvas.create_window((0, 0), window=frame_botones, anchor="nw")
+ 
+    def _ajustar_ancho(event):
+        canvas.itemconfig(canvas_window, width=event.width)
+    canvas.bind("<Configure>", _ajustar_ancho)
+ 
+    def _actualizar_scroll(event):
+        canvas.configure(scrollregion=canvas.bbox("all"))
+    frame_botones.bind("<Configure>", _actualizar_scroll)
+ 
+    def _rueda(event):
+        canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+    canvas.bind("<MouseWheel>", _rueda)
+ 
     for idx, p in disponibles:
         def elegir(i=idx):
             jugador.activo = i
@@ -199,14 +233,14 @@ def _ventana_cambio(ventana_padre, jugador: Entrenador, al_cambiar):
             al_cambiar()
  
         tk.Button(
-            win,
+            frame_botones,
             text=f"{p.nombre}\nHP: {p.hp_actual}/{p.hp_max}",
             font=("Courier", 10),
             bg=COLOR_BOTON, fg=COLOR_TEXTO,
             activebackground=COLOR_ACENTO, activeforeground=COLOR_FONDO,
-            relief="flat", pady=6, width=22,
+            relief="flat", pady=6, width=24,
             command=elegir,
-        ).pack(pady=4, padx=20, fill="x")
+        ).pack(pady=4, padx=10, fill="x")
  
  
 def _nombre_tierra(idx: int) -> str:
@@ -485,3 +519,4 @@ def crear_pantalla_batalla(
         callback_actualizar_ui=callback_actualizar_ui,
         callback_fin=callback_fin,
     )
+ 

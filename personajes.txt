@@ -1,5 +1,5 @@
-Jose_David,160,10,24
-Hansi_pig,170,15,12
+Jose_David,145,10,24
+Hansi_pig,145,15,12
 Spiderman,100,28,8
 Anthony_Porras,110,22,10
 Bad_Bunny,105,24,9
