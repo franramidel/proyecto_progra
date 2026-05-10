@@ -1,29 +1,10 @@
 """
-modelos.py
-----------
 Define las clases centrales del juego:
   - Personaje : un combatiente con HP, ATK y DEF.
   - Entrenador: agrupa hasta 3 personajes y lleva el puntaje.
-
-¿Por qué un archivo separado?
-  Separar los "datos" de la "interfaz gráfica" hace que el
-  código sea más fácil de leer, probar y modificar sin tocar
-  la pantalla visual.
-
-Preguntas frecuentes en defensa:
-  P: ¿Qué es una clase en Python?
-  R: Una plantilla que define atributos (datos) y métodos
-     (acciones) de un tipo de objeto. Aquí Personaje agrupa
-     nombre, hp, atk y def en un solo lugar.
-
-  P: ¿Por qué hp_actual distinto de hp_max?
-  R: hp_max es el tope permanente; hp_actual cambia en
-     combate. Así podemos restaurar la vida al capturar
-     un personaje sin perder el valor original.
+  
 """
-
 import random
-
 
 class Personaje:
     """Representa un personaje del juego con sus estadísticas."""
@@ -34,6 +15,9 @@ class Personaje:
         self.hp_actual = hp     # Vida en combate (baja y sube)
         self.atk = atk
         self.defensa = defensa
+        
+        nombre_archivo=nombre.lower().replace(" ", "_")
+        self.imagen_ruta=f"imagenes/{nombre_archivo}.png"
 
     # ── Propiedades de estado ──────────────────────────────
     def esta_ko(self) -> bool:
@@ -49,10 +33,6 @@ class Personaje:
         """
         Daño = ATK del atacante - DEF del defensor.
         Si el resultado es <= 0, el daño mínimo es 1.
-
-        ¿Por qué daño mínimo 1?
-          Para que siempre haya progreso en el combate y la
-          batalla no dure eternamente.
         """
         danio = self.atk - defensor.defensa
         return max(1, danio)   # max(1, x) garantiza el mínimo
@@ -72,12 +52,8 @@ def cargar_personajes(ruta: str = "personajes.txt") -> list[Personaje]:
     """
     Lee el archivo de texto y devuelve una lista de Personaje.
 
-    Formato esperado por línea:
+    Formato:
         nombre,hp,atk,def
-
-    ¿Por qué leer de archivo?
-      El enunciado lo exige (req. 03) y además permite cambiar
-      personajes sin tocar el código Python.
     """
     personajes = []
     with open(ruta, "r", encoding="utf-8") as archivo:
@@ -132,11 +108,6 @@ class Entrenador:
     def elegir_accion_random(self) -> str:
         """
         IA del Hollow: elige aleatoriamente entre ATACAR o CAMBIAR.
-
-        ¿Por qué random?
-          El enunciado (req. 02) especifica que el Hollow es
-          completamente aleatorio. Usar random.choice es la
-          forma más directa de cumplirlo.
         """
         vivos = [p for p in self.personajes if not p.esta_ko()]
         # Si solo tiene un personaje vivo, no puede cambiar

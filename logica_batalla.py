@@ -1,34 +1,3 @@
-"""
-logica_batalla.py
------------------
-Motor de combate del juego. Maneja los turnos de la batalla
-y contiene la función RECURSIVA requerida por el enunciado.
-
-¿Por qué un archivo separado para la lógica?
-  Separa la "regla del juego" de la "pantalla gráfica".
-  Si mañana cambias la interfaz, la lógica de combate no
-  se toca.
-
-Recursividad utilizada (req. obligatorio):
-  La función `ejecutar_turno_recursivo` se llama a sí misma
-  para procesar cada turno del combate. En lugar de un
-  bucle while, usamos recursión: cuando un turno termina,
-  la función decide si el combate sigue y se llama de nuevo.
-
-Preguntas frecuentes en defensa:
-  P: ¿Qué es recursividad?
-  R: Una función que se llama a sí misma. Necesita un caso
-     base (condición de parada) para no ser infinita.
-
-  P: ¿Cuál es el caso base aquí?
-  R: Cuando alguno de los dos entrenadores se queda sin
-     personajes vivos. Ahí la función deja de llamarse.
-
-  P: ¿Por qué no usaste un while?
-  R: El enunciado exige recursividad. Además, la recursión
-     aquí es natural: "un turno genera el siguiente turno".
-"""
-
 import random
 from modelos import Entrenador, Personaje
 
@@ -54,7 +23,7 @@ def calcular_turno(atacante: Entrenador, defensor: Entrenador) -> dict:
         "personaje_nuevo": "",
     }
 
-    # La IA del Hollow elige su acción de forma aleatoria
+    # La ia del Hollow elige su acción de forma aleatoria
     accion = atacante.elegir_accion_random()
     resultado["accion"] = accion
 
@@ -99,18 +68,8 @@ def ejecutar_turno_recursivo(
     profundidad: int = 0,
 ):
     """
-    Función RECURSIVA que ejecuta los turnos del combate.
-
-    Parámetros:
-      jugador            : entrenador del jugador humano
-      hollow             : entrenador del hollow (IA)
-      turno_jugador      : True si le toca al jugador, False al hollow
-      callback_actualizar_ui : función que redibuja la pantalla de batalla
-      callback_fin       : función llamada cuando el combate termina
-      profundidad        : contador interno para debugging
-
-    Caso base (parada de la recursión):
-      Alguno de los dos se queda sin personajes vivos.
+    Funcion recursiva que ejecuta los turnos del combate
+    Caso base: alguno de los dos se queda sin personajes vivos.
 
     ¿Por qué callbacks?
       Tkinter no permite llamadas bloqueantes dentro de la UI.
